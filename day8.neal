@@ -1,0 +1,54 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+var num_lines = to_number(input(""))
+var instructions = input("")
+input("")
+num_lines = num_lines - 2
+
+var edges = {}
+
+for (var num_line = 0; num_line < num_lines; num_line=num_line+1) {
+    var ln = input("")
+    var from = slice(ln, 0, 3)
+    var l = slice(ln, 7, 10)
+    var r = slice(ln, 12, 15)
+    edges[from] = [l, r]
+}
+
+var curr = 'AAA'
+var num_steps = 0
+var inst_size = size(instructions)
+while (curr != 'ZZZ') {
+    if (instructions[num_steps % inst_size] == 'L') {
+        curr = edges[curr][0]
+    } else {
+        curr = edges[curr][1]
+    }
+    num_steps = num_steps + 1
+}
+print num_steps

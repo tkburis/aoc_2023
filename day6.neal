@@ -1,0 +1,105 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func abs(x) {
+    if (x < 0) {
+        return -x
+    } else {
+        return x
+    }
+}
+
+func sqrt(x) {
+    var s_prev = 10
+    var s = (s_prev + x/s_prev) / 2
+    while (abs(s - s_prev) > 0.000001) {
+        s_prev = s
+        s = (s + x/s) / 2
+    }
+    return s
+}
+
+func div2_trunc(a) {
+    if (a % 2 != 0) {
+        return (a-1) / 2
+    } else {
+        return a / 2
+    }
+}
+
+func ceil(x) {  # Positive x only.
+    var left = -1
+    var right = 1000000000000
+    while (right - left > 1) {
+        var mid = div2_trunc(left + right)
+        if (x <= mid) {
+            right = mid
+        } else {
+            left = mid
+        }
+    }
+    return right
+}
+
+func floor(x) {  # Positive x only.
+    var left = -1
+    var right = 1000000000000
+    while (right - left > 1) {
+        var mid = div2_trunc(left + right)
+        if (x < mid) {
+            right = mid
+        } else {
+            left = mid
+        }
+    }
+    return left
+}
+
+var num_lines = 2
+var times_split = split(input(""), ' ')
+var dists_split = split(input(""), ' ')
+var times = []
+var dists = []
+for (var i = 1; i < size(times_split); i=i+1) {
+    if (times_split[i] != '') {
+        append(times, to_number(times_split[i]))
+    }
+}
+for (var i = 1; i < size(dists_split); i=i+1) {
+    if (dists_split[i] != '') {
+        append(dists, to_number(dists_split[i]))
+    }
+}
+
+var ans = 1
+
+for (var i = 0; i < size(times); i=i+1) {
+    var sol1 = (times[i] + sqrt(times[i]*times[i] - 4*dists[i])) / 2
+    var sol2 = (times[i] - sqrt(times[i]*times[i] - 4*dists[i])) / 2
+    ans = ans * (ceil(sol1 - 1) - floor(sol2 + 1) + 1)
+}
+print ans

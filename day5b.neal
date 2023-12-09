@@ -1,0 +1,183 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func contains(str, sub) {
+    var n = size(str)
+    var m = size(sub)
+    for (var i = 0; i < n - m + 1; i=i+1) {
+        if (slice(str, i, i+m) == sub) {
+            return true
+        }
+    }
+    return false
+}
+
+func merge(a, b) {
+    var res = []
+    var i = 0
+    var j = 0
+    var n = size(a)
+    var m = size(b)
+    while (i < n or j < m) {
+        if (i == n) {
+            append(res, b[j])
+            j = j + 1
+        } else if (j == m) {
+            append(res, a[i])
+            i = i + 1
+        } else {
+            if (a[i][1] < b[j][1]) {
+                append(res, a[i])
+                i = i + 1
+            } else {
+                append(res, b[j])
+                j = j + 1
+            }
+        }
+    }
+    return res
+}
+
+func merge_sort(a) {
+    var n = size(a)
+    if (n <= 1) {
+        return a
+    }
+    var left = []
+    var right = []
+    var half = n/2
+    for (var i = 0; i < n; i=i+1) {
+        if (i < n/2) {
+            append(left, a[i])
+        } else {
+            append(right, a[i])
+        }
+    }
+    left = merge_sort(left)
+    right = merge_sort(right)
+    return merge(left, right)
+}
+
+func min(a, b) {
+    if (a < b) {
+        return a
+    } else {
+        return b
+    }
+}
+
+func max(a, b) {
+    if (a > b) {
+        return a
+    } else {
+        return b
+    }
+}
+
+var num_lines = to_number(input(""))
+var maps = []
+var seeds = []
+for (var i = 0; i < num_lines; i=i+1) {
+    var ln = input("")
+    if (i == 0) {
+        seeds = split(split(ln, ": ")[1], " ")
+        for (var j = 0; j < size(seeds); j=j+1) {
+            seeds[j] = to_number(seeds[j])
+        }
+    } else {
+        if (contains(ln, ":")) {
+            i = i+1
+            var a = []
+            for (; i < num_lines; i=i+1) {
+                ln = input("")
+                if (ln == "") {break}
+                var this = split(ln, " ")
+                for (var j = 0; j < size(this); j=j+1) {
+                    this[j] = to_number(this[j])
+                }
+                append(a, this)
+            }
+            append(maps, a)
+        }
+    }
+}
+
+var num_seeds = size(seeds)
+var num_maps = size(maps)
+
+func rec(range_start, range_end, filter_stage) {
+    # print 'STAGE: ' + to_string(filter_stage)
+    if (filter_stage == num_maps) {
+        return range_start
+    }
+
+    var mn = 1000000000000000
+    var num_rules = size(maps[filter_stage])
+    var covered = []
+    for (var num_rule = 0; num_rule < num_rules; num_rule=num_rule+1) {
+        var rule = maps[filter_stage][num_rule]
+
+        var accept_range_start = max(rule[1], range_start)
+        var accept_range_end = min(rule[1] + rule[2] - 1, range_end)
+        # print 'RANGE: ' + to_string(range_start) + '-' + to_string(range_end)
+        # print 'RULE: ' + to_string(rule[1]) + '-' + to_string(rule[1] + rule[2] - 1)
+        # print 'ACCEPT: ' + to_string(accept_range_start) + '-' + to_string(accept_range_end)
+        if (accept_range_start <= accept_range_end) {
+            var dest_range_start = rule[0] + max(accept_range_start - rule[1], 0)
+            var dest_range_end = rule[0] + rule[2] - max(rule[1] + rule[2] - accept_range_end, 0)
+            # print 'DEST: ' + to_string(dest_range_start) + '-' + to_string(dest_range_end)
+            mn = min(mn, rec(dest_range_start, dest_range_end, filter_stage + 1))
+
+            append(covered, [rule[1], rule[1] + rule[2] - 1])
+        }
+        # print ''
+    }
+    covered = merge_sort(covered)
+    var cov_size = size(covered)
+    if (cov_size == 0) {
+        mn = min(mn, rec(range_start, range_end, filter_stage + 1))
+    } else {
+        if (covered[0][0] > range_start) {
+            mn = min(mn, rec(range_start, covered[0][0] - 1, filter_stage + 1))
+        }
+        for (var i = 0; i < cov_size - 1; i=i+1) {
+            if (covered[i][1] + 1 <= covered[i+1][0] - 1) {
+                mn = min(mn, rec(covered[i][1] + 1, covered[i+1][0] - 1, filter_stage + 1))
+            }
+        }
+        if (covered[cov_size-1][1] < range_end) {
+            mn = min(mn, rec(covered[cov_size-1][1] + 1, range_end, filter_stage + 1))
+        }
+    }
+    return mn
+}
+
+var mn = 1000000000000000
+for (var i = 0; i < num_seeds; i=i+2) {
+    mn = min(mn, rec(seeds[i], seeds[i]+seeds[i+1]-1, 0))
+}
+print mn

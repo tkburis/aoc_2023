@@ -1,0 +1,83 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func contains(str, sub) {
+    var n = size(str)
+    var m = size(sub)
+    for (var i = 0; i < n - m + 1; i=i+1) {
+        if (slice(str, i, i+m) == sub) {
+            return true
+        }
+    }
+    return false
+}
+
+var num_lines = to_number(input(""))
+var maps = []
+var seeds = []
+for (var i = 0; i < num_lines; i=i+1) {
+    var ln = input("")
+    if (i == 0) {
+        seeds = split(split(ln, ": ")[1], " ")
+        for (var j = 0; j < size(seeds); j=j+1) {
+            seeds[j] = to_number(seeds[j])
+        }
+    } else {
+        if (contains(ln, ":")) {
+            i = i+1
+            var a = []
+            for (; i < num_lines; i=i+1) {
+                ln = input("")
+                if (ln == "") {break}
+                var this = split(ln, " ")
+                for (var j = 0; j < size(this); j=j+1) {
+                    this[j] = to_number(this[j])
+                }
+                append(a, this)
+            }
+            append(maps, a)
+        }
+    }
+}
+
+var num_seeds = size(seeds)
+var num_maps = size(maps)
+var min = 10000000000000000
+for (var i = 0; i < num_seeds; i=i+1) {
+    var curr_num = seeds[i]
+    for (var j = 0; j < num_maps; j=j+1) {
+        var num_rules = size(maps[j])
+        for (var k = 0; k < num_rules; k=k+1) {
+            if (maps[j][k][1] <= curr_num and curr_num < maps[j][k][1] + maps[j][k][2]) {
+                curr_num = maps[j][k][0] + curr_num - maps[j][k][1]
+                break
+            }
+        }
+    }
+    if (curr_num < min) {min = curr_num}
+}
+print(min)

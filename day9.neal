@@ -1,0 +1,55 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func extrap(a) {
+    var diffs = []
+    var all_zero = true
+    var n = size(a)
+    for (var i = 0; i < n-1; i=i+1) {
+        append(diffs, a[i+1]-a[i])
+        if (a[i+1]-a[i] != 0) {
+            all_zero = false
+        }
+    }
+    if (all_zero) {
+        return 0
+    }
+    return diffs[size(diffs)-1] + extrap(diffs)
+}
+
+var num_lines = to_number(input(""))
+
+var ans = 0
+for (var num_line = 0; num_line < num_lines; num_line = num_line + 1) {
+    var a = split(input(""), " ")
+    var n = size(a)
+    for (var i = 0; i < n; i=i+1) {
+        a[i] = to_number(a[i])
+    }
+    ans = ans + extrap(a) + a[n-1]
+}
+print ans

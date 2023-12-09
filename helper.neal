@@ -1,0 +1,141 @@
+# C:\Users\tkbur\OneDrive - Tonbridge School\A Level\CompSci\TK Buristrakul\Code\NEA\target\release\nea.exe
+
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func contains(str, sub) {
+    var n = size(str)
+    var m = size(sub)
+    for (var i = 0; i < n - m + 1; i=i+1) {
+        if (slice(str, i, i+m) == sub) {
+            return true
+        }
+    }
+    return false
+}
+
+func merge(a, b) {
+    var res = []
+    var i = 0
+    var j = 0
+    var n = size(a)
+    var m = size(b)
+    while (i < n or j < m) {
+        if (i == n) {
+            append(res, b[j])
+            j = j + 1
+        } else if (j == m) {
+            append(res, a[i])
+            i = i + 1
+        } else {
+            if (a[i] < b[j]) {
+                append(res, a[i])
+                i = i + 1
+            } else {
+                append(res, b[j])
+                j = j + 1
+            }
+        }
+    }
+    return res
+}
+
+func merge_sort(a) {
+    var n = size(a)
+    if (n <= 1) {
+        return a
+    }
+    var left = []
+    var right = []
+    var half = n/2
+    for (var i = 0; i < n; i=i+1) {
+        if (i < n/2) {
+            append(left, a[i])
+        } else {
+            append(right, a[i])
+        }
+    }
+    left = merge_sort(left)
+    right = merge_sort(right)
+    return merge(left, right)
+}
+
+func abs(x) {
+    if (x < 0) {
+        return -x
+    } else {
+        return x
+    }
+}
+
+func sqrt(x) {
+    var s_prev = 10
+    var s = (s_prev + x/s_prev) / 2
+    while (abs(s - s_prev) > 0.000001) {
+        s_prev = s
+        s = (s + x/s) / 2
+    }
+    return s
+}
+
+func div2_trunc(a) {
+    if (a % 2 != 0) {
+        return (a-1) / 2
+    } else {
+        return a / 2
+    }
+}
+
+func ceil(x) {  # Positive x only.
+    var left = -1
+    var right = 1000000000000
+    while (right - left > 1) {
+        var mid = div2_trunc(left + right)
+        if (x <= mid) {
+            right = mid
+        } else {
+            left = mid
+        }
+    }
+    return right
+}
+
+func floor(x) {  # Positive x only.
+    var left = -1
+    var right = 1000000000000
+    while (right - left > 1) {
+        var mid = div2_trunc(left + right)
+        if (x <= mid) {
+            right = mid
+        } else {
+            left = mid
+        }
+    }
+    return left
+}
+
+print floor(6)

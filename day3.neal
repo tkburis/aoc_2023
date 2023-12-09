@@ -1,0 +1,83 @@
+var num_lines = to_number(input(""))
+var grid = []
+for (var i = 0; i < num_lines; i=i+1) {
+    var ln = input("")
+    var ln_array = []
+    for (var j = 0; j < size(ln); j=j+1) {
+        append(ln_array, ln[j])
+    }
+    append(grid, ln_array)
+}
+
+var digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+func is_digit(c) {
+    for (var i = 0; i < size(digits); i=i+1) {
+        if (c == digits[i]) {
+            return true
+        }
+    }
+    return false
+}
+
+var adj = []
+for (var i = 0; i < num_lines; i=i+1) {
+    if (i % 10 == 0) {print i}
+    var a = []
+    var n = size(grid[i])
+    for (var j = 0; j < n; j=j+1) {
+        append(a, false)
+    }
+    append(adj, a)
+}
+
+for (var i = 0; i < num_lines; i=i+1) {
+    if (i % 10 == 0) {print i}
+    var n = size(grid[i])
+    for (var j = 0; j < n; j=j+1) {
+        if (grid[i][j] != '.' and !is_digit(grid[i][j])) {
+            for (var a = -1; a <= 1 and 0 <= i + a and i + a < num_lines; a=a+1) {
+                for (var b = -1; b <= 1 and 0 <= j + b and j + b < n; b=b+1) {
+                    adj[i+a][j+b] = true
+                }
+            }
+        }
+    }
+}
+
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+var ans = 0
+for (var i = 0; i < num_lines; i=i+1) {
+    if (i % 10 == 0) {print i}
+    var n = size(grid[i])
+    for (var j = 0; j < n; j=j+1) {
+        if (is_digit(grid[i][j])) {
+            var start = j
+            var add = false
+            var added = false
+            while (j < n) {
+                if (!is_digit(grid[i][j])) {
+                    if (add) {
+                        ans = ans + to_number(slice(grid[i], start, j))
+                        added = true
+                    }
+                    break
+                }
+                if (adj[i][j]) {
+                    add = true
+                }
+                j = j + 1
+            }
+            if (add and !added) {
+                ans = ans + to_number(slice(grid[i], start, n))
+            }
+        }
+    }
+}
+print ans

@@ -1,0 +1,56 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+var lims = {
+    "red": 12,
+    "green": 13,
+    "blue": 14
+}
+
+var num_inputs = to_number(input(""))
+var ans = 0
+for (var num_input = 1; num_input <= num_inputs; num_input = num_input + 1) {
+    if (num_input % 10 == 0) {print num_input}
+    var possible = true
+    var input_string = input("")
+    var subsets = split(split(input_string, ": ")[1], "; ")
+    for (var sub = 0; sub < size(subsets); sub = sub + 1) {
+        var subset = split(subsets[sub], ", ")
+        for (var i = 0; i < size(subset); i = i + 1) {
+            var balls = split(subset[i], " ")
+            if (to_number(balls[0]) > lims[balls[1]]) {
+                possible = false
+                break
+            }
+        }
+        if (!possible) {break}
+    }
+    if (possible) {
+        ans = ans + num_input
+    }
+}
+print(ans)

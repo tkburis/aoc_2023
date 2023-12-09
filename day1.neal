@@ -1,0 +1,60 @@
+func get_word_digit(s, i) {
+    var digit_words = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+    var digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    for (var d = 0; d < size(digit_words); d=d+1) {
+        if (size(s)-i >= size(digit_words[d])) {
+            var t = ""
+            for (var j = i; j < i+size(digit_words[d]); j=j+1) {
+                t = t + s[j] 
+            }
+            if (t == digit_words[d]) {
+                return digits[d]
+            }
+        }
+    }
+    return null
+}
+
+var num_lines = to_number(input(""))
+var ans = 0
+for (var num_line = 0; num_line < num_lines; num_line = num_line + 1) {
+    if (num_line % 100 == 0) {print num_line}
+    var inp = input("")
+    var first = -1
+    var digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    for (var i = 0; i < size(inp); i = i + 1) {
+        var found = false
+        for (var j = 0; j < size(digits); j = j + 1) {
+            if (inp[i] == digits[j]) {
+                first = inp[i]
+                found = true
+                break
+            }
+        }
+        var w = get_word_digit(inp, i)
+        if (w != null) {
+            first = w
+            found = true
+        }
+        if (found) {break}
+    }
+    var last = -1
+    for (var i = size(inp)-1; i >= 0; i = i - 1) {
+        var found = false
+        for (var j = 0; j < size(digits); j = j + 1) {
+            if (inp[i] == digits[j]) {
+                last = inp[i]
+                found = true
+                break
+            }
+        }
+        var w = get_word_digit(inp, i)
+        if (w != null) {
+            last = w
+            found = true
+        }
+        if (found) {break}
+    }
+    ans = ans + to_number(to_string(first) + to_string(last))
+}
+print ans

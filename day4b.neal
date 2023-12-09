@@ -1,0 +1,126 @@
+func slice(str, i, j) {
+    var ret = ""
+    for (; i < j; i = i + 1) {
+        ret = ret + str[i]
+    }
+    return ret
+}
+
+func split(str, delim) {
+    var a = []
+    var n = size(str)
+    var start = 0
+
+    var curr = 0
+    for (; curr < n; curr = curr + 1) {
+        if (curr + size(delim) <= n) {
+            if (slice(str, curr, curr + size(delim)) == delim) {
+                append(a, slice(str, start, curr))
+                curr = curr + size(delim) - 1
+                start = curr + 1
+            }
+        }
+    }
+    append(a, slice(str, start, curr))
+    return a
+}
+
+func merge(a, b) {
+    var res = []
+    var i = 0
+    var j = 0
+    var n = size(a)
+    var m = size(b)
+    while (i < n or j < m) {
+        if (i == n) {
+            append(res, b[j])
+            j = j + 1
+        } else if (j == m) {
+            append(res, a[i])
+            i = i + 1
+        } else {
+            if (a[i] < b[j]) {
+                append(res, a[i])
+                i = i + 1
+            } else {
+                append(res, b[j])
+                j = j + 1
+            }
+        }
+    }
+    return res
+}
+
+func merge_sort(a) {
+    var n = size(a)
+    if (n <= 1) {
+        return a
+    }
+    var left = []
+    var right = []
+    var half = n/2
+    for (var i = 0; i < n; i=i+1) {
+        if (i < n/2) {
+            append(left, a[i])
+        } else {
+            append(right, a[i])
+        }
+    }
+    left = merge_sort(left)
+    right = merge_sort(right)
+    return merge(left, right)
+}
+
+var num_lines = to_number(input(""))
+var num_cards = []
+for (var i = 0; i < num_lines; i=i+1) {
+    append(num_cards, 1)
+}
+
+var ans = 0
+for (var _ = 0; _ < num_lines; _ = _ + 1) {
+    var nums = split(split(input(""), ": ")[1], " | ")
+    var have_nums_with_empties = split(nums[0], " ")
+    var win_nums_with_empties = split(nums[1], " ")
+    
+    var have_nums = []
+    for (var i = 0; i < size(have_nums_with_empties); i=i+1) {
+        if (have_nums_with_empties[i] != "") {
+            append(have_nums, to_number(have_nums_with_empties[i]))
+        }
+    }
+    var win_nums = []
+    for (var i = 0; i < size(win_nums_with_empties); i=i+1) {
+        if (win_nums_with_empties[i] != "") {
+            append(win_nums, to_number(win_nums_with_empties[i]))
+        }
+    }
+    
+    var have_nums_sorted = merge_sort(have_nums)
+    var win_nums_sorted = merge_sort(win_nums)
+
+    var matches = 0
+    var j = 0
+    var n = size(have_nums_sorted)
+    var m = size(win_nums_sorted)
+
+    for (var i = 0; i < n; i=i+1) {
+        while (j < m) {
+            if (win_nums_sorted[j] < have_nums_sorted[i]) {
+                j = j + 1
+            } else if (win_nums_sorted[j] == have_nums_sorted[i]) {
+                matches = matches + 1
+                j = j + 1
+                break
+            } else {
+                break
+            }
+        }
+    }
+    var num_card = num_cards[_]
+    ans = ans + matches * num_card
+    for (var i = _ + 1; i <= _ + matches and i < num_lines; i = i + 1) {
+        num_cards[i] = num_cards[i] + num_card
+    }
+}
+print ans + num_lines
